@@ -39,6 +39,8 @@ final lightTheme = ThemeData(
   appBarTheme: appBarThemeLight,
   inputDecorationTheme: inputDecorationThemeLight,
   iconTheme: iconThemeDataLight,
+  textButtonTheme: textButtonTheme,
+  elevatedButtonTheme: elevatedButtonTheme,
 );
 
 final darkTheme = ThemeData(
@@ -52,6 +54,8 @@ final darkTheme = ThemeData(
   appBarTheme: appBarThemeDark,
   inputDecorationTheme: inputDecorationThemeDark,
   iconTheme: iconThemeDataDark,
+  textButtonTheme: textButtonTheme,
+  elevatedButtonTheme: elevatedButtonTheme,
 );
 
 final appBarThemeLight = AppBarTheme(
@@ -67,7 +71,7 @@ final appBarThemeDark = AppBarTheme(
 );
 
 final iconThemeDataLight = IconThemeData(
-  color: Colors.black,
+  color: colorSchemeLight.primary,
 );
 
 final iconThemeDataDark = IconThemeData(
@@ -88,16 +92,33 @@ final inputDecorationThemeDark = InputDecorationTheme(
   ),
 );
 
+final textButtonTheme = TextButtonThemeData(
+  style: TextButton.styleFrom(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+    ),
+  ),
+);
+
+final elevatedButtonTheme = ElevatedButtonThemeData(
+  style: ElevatedButton.styleFrom(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+    ),
+    elevation: 8.0,
+  ),
+);
+
 final colorSchemeLight = ColorScheme(
-  primary: const Color(0xFFFF8642),
-  primaryVariant: const Color(0xFFFF8642),
-  secondary: const Color(0xFF41BAFF),
-  secondaryVariant: const Color(0xFF41BAFF),
-  surface: Colors.grey[50]!,
-  background: Colors.grey[50]!,
+  primary: const Color(0xFF6B06C4),
+  primaryVariant: const Color(0xFF6B06C4),
+  secondary: Colors.black,
+  secondaryVariant: Colors.black,
+  surface: Colors.grey[300]!,
+  background: Colors.grey[300]!,
   error: Colors.red,
-  onPrimary: const Color(0xFF41BAFF),
-  onSecondary: const Color(0xFF41BAFF),
+  onPrimary: Colors.white,
+  onSecondary: Colors.white,
   onSurface: Colors.black,
   onBackground: Colors.black,
   onError: Colors.black,

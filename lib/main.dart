@@ -74,7 +74,8 @@ class AuthManager extends StatelessWidget {
     if (authProvider.isAuthenticated) {
       return HomeScreen();
     } else {
-      return AuthScreen();
+      // return AuthScreen();
+      return HomeScreen();
     }
   }
 }

@@ -5,6 +5,10 @@ import 'package:provider/provider.dart';
 
 import 'package:fipro/config/strings.dart' as strings;
 
+import 'package:fipro/widgets/button_widget.dart';
+import 'package:fipro/widgets/logo_widget.dart';
+import 'package:fipro/widgets/title_widget.dart';
+
 enum FormType { login, register }
 
 class AuthScreen extends StatefulWidget {
@@ -82,8 +86,23 @@ class _AuthScreenState extends State<AuthScreen> {
         Form(
           key: formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: buildInputs() + buildSubmitButtons(),
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              LogoWidget(fontSize: 50),
+              Center(
+                child: Card(
+                  child: Container(
+                    width: 500,
+                    padding: EdgeInsets.all(32.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: buildInputs() + buildSubmitButtons(),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -93,70 +112,60 @@ class _AuthScreenState extends State<AuthScreen> {
   List<Widget> buildInputs() {
     if (formType == FormType.login) {
       return [
-        AccentColorOverride(
-          child: TextFormField(
-            decoration: InputDecoration(labelText: strings.email),
-            validator: (value) => value!.isEmpty
-                ? strings.emailError
-                : EmailValidator.validate(value)
-                    ? null
-                    : strings.emailError,
-            onSaved: (value) => email = value,
-          ),
+        TitleWidget(title: 'Login'),
+        SizedBox(height: 24.0),
+        TextFormField(
+          keyboardType: TextInputType.emailAddress,
+          decoration: InputDecoration(labelText: strings.email),
+          validator: (value) => value!.isEmpty
+              ? strings.emailError
+              : EmailValidator.validate(value)
+                  ? null
+                  : strings.emailError,
+          onSaved: (value) => email = value,
         ),
-        SizedBox(height: 10.0),
-        AccentColorOverride(
-          child: TextFormField(
-            decoration: InputDecoration(
-              labelText: strings.password,
-              suffixIcon: IconButton(
-                icon:
-                    Icon(obscureText ? Icons.visibility_off : Icons.visibility),
-                onPressed: toggle,
-              ),
+        SizedBox(height: 16.0),
+        TextFormField(
+          keyboardType: TextInputType.visiblePassword,
+          decoration: InputDecoration(
+            labelText: strings.password,
+            suffixIcon: IconButton(
+              icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility),
+              onPressed: toggle,
             ),
-            validator: (value) => value!.isEmpty ? strings.passwordError : null,
-            onSaved: (value) => password = value,
-            obscureText: obscureText,
           ),
+          validator: (value) => value!.isEmpty ? strings.passwordError : null,
+          onSaved: (value) => password = value,
+          obscureText: obscureText,
         ),
       ];
     } else {
       return [
-        AccentColorOverride(
-          child: TextFormField(
-            decoration: InputDecoration(labelText: strings.name),
-            validator: (value) => value!.isEmpty ? strings.nameError : null,
-            onSaved: (value) => name = value,
-          ),
+        TitleWidget(title: 'Register'),
+        SizedBox(height: 24.0),
+        TextFormField(
+          keyboardType: TextInputType.emailAddress,
+          decoration: InputDecoration(labelText: strings.email),
+          validator: (value) => value!.isEmpty
+              ? strings.emailError
+              : EmailValidator.validate(value)
+                  ? null
+                  : strings.emailError,
+          onSaved: (value) => email = value,
         ),
-        SizedBox(height: 10.0),
-        AccentColorOverride(
-          child: TextFormField(
-            decoration: InputDecoration(labelText: strings.email),
-            validator: (value) => value!.isEmpty
-                ? strings.emailError
-                : EmailValidator.validate(value)
-                    ? null
-                    : strings.emailError,
-            onSaved: (value) => email = value,
-          ),
-        ),
-        SizedBox(height: 10.0),
-        AccentColorOverride(
-          child: TextFormField(
-            decoration: InputDecoration(
-              labelText: strings.password,
-              suffixIcon: IconButton(
-                icon:
-                    Icon(obscureText ? Icons.visibility_off : Icons.visibility),
-                onPressed: toggle,
-              ),
+        SizedBox(height: 16.0),
+        TextFormField(
+          keyboardType: TextInputType.visiblePassword,
+          decoration: InputDecoration(
+            labelText: strings.password,
+            suffixIcon: IconButton(
+              icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility),
+              onPressed: toggle,
             ),
-            validator: (value) => value!.isEmpty ? strings.passwordError : null,
-            onSaved: (value) => password = value,
-            obscureText: obscureText,
           ),
+          validator: (value) => value!.isEmpty ? strings.passwordError : null,
+          onSaved: (value) => password = value,
+          obscureText: obscureText,
         ),
       ];
     }
@@ -171,66 +180,28 @@ class _AuthScreenState extends State<AuthScreen> {
           height: 50,
           child: ElevatedButton(
             child: Text(strings.login, style: TextStyle(fontSize: 20.0)),
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4.0))),
-            ),
             onPressed: validateAndSubmit,
           ),
         ),
+        SizedBox(height: 8.0),
         TextButton(
           child: Text(strings.register, style: TextStyle(fontSize: 20.0)),
-          style: TextButton.styleFrom(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(4.0))),
-          ),
           onPressed: moveToRegister,
         ),
       ];
     } else {
       return [
         SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity, // match_parent
-          height: 50,
-          child: ElevatedButton(
-            child: Text(strings.register, style: TextStyle(fontSize: 20.0)),
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4.0))),
-              elevation: 8.0,
-            ),
-            onPressed: validateAndSubmit,
-          ),
+        ButtonWidget(
+          text: strings.register,
+          onPressed: validateAndSubmit,
         ),
+        SizedBox(height: 8.0),
         TextButton(
           child: Text(strings.haveAccount, style: TextStyle(fontSize: 20.0)),
-          style: TextButton.styleFrom(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(4.0))),
-          ),
           onPressed: moveToLogin,
         ),
       ];
     }
-  }
-}
-
-class AccentColorOverride extends StatelessWidget {
-  const AccentColorOverride({Key? key, this.color, this.child})
-      : super(key: key);
-
-  final Color? color;
-  final Widget? child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-      child: child!,
-      data: Theme.of(context).copyWith(
-        accentColor: color,
-        brightness: Brightness.dark,
-      ),
-    );
   }
 }
