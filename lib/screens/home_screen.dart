@@ -42,11 +42,11 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime? billDate;
 
   String daysPerYear = "360";
-  String rateTerm = "Semestral";
+  String rateTerm = "Anual";
   String? nominalValue;
   String? rateValue;
 
-  int rateDays = 180;
+  int rateDays = 360;
 
   String? initialReason;
   String initialValueType = "Efectivo";
@@ -1088,7 +1088,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 32.0),
                       width: double.infinity,
                       child: Text(
-                        "Valor a Recibir: ${valueToReceiveTotal.toStringAsFixed(2)}",
+                        "Valor a Recibir Total: ${valueToReceiveTotal.toStringAsFixed(2)}",
                         textAlign: TextAlign.end,
                       ),
                     ),

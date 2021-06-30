@@ -7,7 +7,7 @@ class Bill {
   String id; // Id
   String userId; //Id del Usuario
   DateTime discountDate; //Fecha de Descuento
-  DateTime dueDate; // Fecha de VencimientoFecha de Descuento
+  DateTime dueDate; // Fecha de Vencimiento
   DateTime billDate; // Fecha de Giro
   double nominalValue; // Valor nominal
   double initialTotal; //Costos iniciales
