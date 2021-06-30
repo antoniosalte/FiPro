@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -31,6 +30,10 @@ class AuthProvider with ChangeNotifier {
 
   bool get isAuthenticated {
     return user != null;
+  }
+
+  String get uid {
+    return user!.uid;
   }
 
   Future<void> registerUser(String email, String password) async {

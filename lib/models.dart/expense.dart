@@ -24,4 +24,22 @@ class Expense {
       value: value,
     );
   }
+
+  factory Expense.fromMap(
+    Map map,
+  ) {
+    return Expense(
+      expenseType: map['expenseType'],
+      reason: map['reason'],
+      valueType: map['valueType'],
+      value: map['value'],
+    );
+  }
+
+  Map<String, dynamic> toFirestore() => <String, dynamic>{
+        'expenseType': expenseType,
+        'reason': reason,
+        'valueType': valueType,
+        'value': value,
+      };
 }

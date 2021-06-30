@@ -126,17 +126,17 @@ final colorSchemeLight = ColorScheme(
 );
 
 final colorSchemeDark = ColorScheme(
-  primary: const Color(0xFFFF8642),
-  primaryVariant: const Color(0xFFFF8642),
-  secondary: const Color(0xFF41BAFF),
-  secondaryVariant: const Color(0xFF41BAFF),
-  surface: Colors.grey[850]!,
-  background: Colors.grey[850]!,
+  primary: const Color(0xFF9B38FF),
+  primaryVariant: const Color(0xFF9B38FF),
+  secondary: Colors.black,
+  secondaryVariant: Colors.black,
+  surface: Colors.grey[900]!,
+  background: Colors.grey[900]!,
   error: Colors.red,
-  onPrimary: const Color(0xFF41BAFF),
-  onSecondary: const Color(0xFF41BAFF),
-  onSurface: Colors.white,
-  onBackground: Colors.white,
-  onError: Colors.white,
+  onPrimary: Colors.grey[300]!,
+  onSecondary: Colors.grey[300]!,
+  onSurface: Colors.black,
+  onBackground: Colors.black,
+  onError: Colors.black,
   brightness: Brightness.dark,
 );

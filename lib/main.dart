@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
 }
 
 /// Maneja los estados de la aplicaión.
-/// Si un usuario esta autenticado muestra la aplicación y su jugabilidad.
+/// Si un usuario esta autenticado muestra la aplicación y su funcionalidad.
 /// Si un usuario no esta autenticado muestra la pantalla para el inicio de sesión.
 class AuthManager extends StatelessWidget {
   AuthManager({Key? key, this.title}) : super(key: key);
@@ -74,8 +74,7 @@ class AuthManager extends StatelessWidget {
     if (authProvider.isAuthenticated) {
       return HomeScreen();
     } else {
-      // return AuthScreen();
-      return HomeScreen();
+      return AuthScreen();
     }
   }
 }
@@ -84,9 +83,11 @@ class Loading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-      child: CircularProgressIndicator(),
-    ));
+      body: Center(
+        child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.primary),
+      ),
+    );
   }
 }
 

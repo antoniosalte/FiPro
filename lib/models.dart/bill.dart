@@ -1,10 +1,14 @@
 import 'dart:math';
 
 import 'expense.dart';
+import 'rate.dart';
 
 class Bill {
-  DateTime emissionDate; //Fecha de Emision
+  String id; // Id
+  String userId; //Id del Usuario
+  DateTime discountDate; //Fecha de Descuento
   DateTime dueDate; // Fecha de VencimientoFecha de Descuento
+  DateTime billDate; // Fecha de Giro
   double nominalValue; // Valor nominal
   double initialTotal; //Costos iniciales
   double finalTotal; // Costos finales
@@ -22,8 +26,11 @@ class Bill {
   Rate tcea; // TCEA usada
 
   Bill({
-    required this.emissionDate,
+    required this.id,
+    required this.userId,
+    required this.discountDate,
     required this.dueDate,
+    required this.billDate,
     required this.nominalValue,
     required this.initialTotal,
     required this.finalTotal,
@@ -41,9 +48,12 @@ class Bill {
     required this.tcea,
   });
 
-  factory Bill.fromMenu(
-    DateTime emissionDate,
+  factory Bill.createToFirestore(
+    String id,
+    String userId,
+    DateTime discountDate,
     DateTime dueDate,
+    DateTime billDate,
     double nominalValue,
     double initialTotal,
     double finalTotal,
@@ -55,7 +65,7 @@ class Bill {
     int rateDays,
     int daysPerYear,
   ) {
-    int days = dueDate.difference(emissionDate).inDays;
+    int days = dueDate.difference(discountDate).inDays;
 
     Rate rate =
         Rate.fromBill(rateType, rateTerm, rateValue, rateDays, daysPerYear);
@@ -72,8 +82,11 @@ class Bill {
         pow(cashFlow / valueToReceive, daysPerYear / days) - 1;
 
     return Bill(
-      emissionDate: emissionDate,
+      id: id,
+      userId: userId,
+      discountDate: discountDate,
       dueDate: dueDate,
+      billDate: billDate,
       nominalValue: nominalValue,
       initialTotal: initialTotal,
       finalTotal: finalTotal,
@@ -91,51 +104,86 @@ class Bill {
       tcea: tcea,
     );
   }
-}
 
-class Rate {
-  String type; // Tipo de Tasa (Efectiva o Nominal)
-  String term; // Periodo de la tasa
-  double value;
-  int days; // Dias de la tasa
-  int daysPerYear; // Dias por año
-
-  Rate({
-    required this.type,
-    required this.term,
-    required this.value,
-    required this.days,
-    required this.daysPerYear,
-  });
-
-  factory Rate.fromBill(
-      String type, String term, double value, int days, int daysPerYear) {
-    return Rate(
-      type: type,
-      term: term,
-      value: value,
+  factory Bill.fromFirestore(
+    String id,
+    String userId,
+    DateTime discountDate,
+    DateTime dueDate,
+    DateTime billDate,
+    double nominalValue,
+    double initialTotal,
+    double finalTotal,
+    List<Expense> initialExpenses,
+    List<Expense> finalExpenses,
+    int days,
+    double interestRate,
+    double discountRate,
+    double discount,
+    double netWorth,
+    double valueToReceive,
+    double cashFlow,
+    double currentTCEARate,
+    Rate rate,
+    Rate tcea,
+  ) {
+    return Bill(
+      id: id,
+      userId: userId,
+      discountDate: discountDate,
+      dueDate: dueDate,
+      billDate: billDate,
+      nominalValue: nominalValue,
+      initialTotal: initialTotal,
+      finalTotal: finalTotal,
+      initialExpenses: initialExpenses,
+      finalExpenses: finalExpenses,
       days: days,
-      daysPerYear: daysPerYear,
+      interestRate: interestRate,
+      discountRate: discountRate,
+      discount: discount,
+      netWorth: netWorth,
+      valueToReceive: valueToReceive,
+      cashFlow: cashFlow,
+      currentTCEARate: currentTCEARate,
+      rate: rate,
+      tcea: tcea,
     );
   }
 
-  factory Rate.createTCEA(Rate rate) {
-    num? value;
+  Map<String, dynamic> toFirestore() {
+    List<Map> initialExpensesMap = [];
+    List<Map> finalExpensesMap = [];
 
-    if (rate.type == "Nominal") {
-      int n = 12;
-      int m = rate.days ~/ 30;
-      value = pow(1 + (rate.value / m), n) - 1;
-    } else if (rate.type == "Efectiva") {
-      value = pow(1 + rate.value, 360 / rate.days) - 1;
+    for (Expense expense in initialExpenses) {
+      initialExpensesMap.add(expense.toFirestore());
     }
 
-    return Rate(
-      type: "Efectiva",
-      term: "Anual",
-      value: value!.toDouble(),
-      days: 360,
-      daysPerYear: rate.daysPerYear,
-    );
+    for (Expense expense in finalExpenses) {
+      finalExpensesMap.add(expense.toFirestore());
+    }
+
+    return <String, dynamic>{
+      'id': id,
+      'userId': userId,
+      'discountDate': discountDate,
+      'dueDate': dueDate,
+      'billDate': billDate,
+      'nominalValue': nominalValue,
+      'initialTotal': initialTotal,
+      'finalTotal': finalTotal,
+      'initialExpenses': initialExpensesMap,
+      'finalExpenses': finalExpensesMap,
+      'days': days,
+      'interestRate': interestRate,
+      'discountRate': discountRate,
+      'discount': discount,
+      'netWorth': netWorth,
+      'valueToReceive': valueToReceive,
+      'cashFlow': cashFlow,
+      'currentTCEARate': currentTCEARate,
+      'rate': rate.toFirestore(),
+      'tcea': tcea.toFirestore(),
+    };
   }
 }

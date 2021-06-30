@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:fipro/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:fipro/config/strings.dart' as strings;
 
 import 'package:fipro/widgets/button_widget.dart';
 import 'package:fipro/widgets/logo_widget.dart';
 import 'package:fipro/widgets/title_widget.dart';
+import 'package:fipro/widgets/toast_widget.dart';
+import 'package:fipro/widgets/loading_widget.dart';
 
 enum FormType { login, register }
 
@@ -21,7 +25,9 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final formKey = new GlobalKey<FormState>();
 
-  FormType formType = FormType.register;
+  FToast fToast = FToast();
+
+  FormType formType = FormType.login;
 
   String? name;
   String? email;
@@ -59,21 +65,73 @@ class _AuthScreenState extends State<AuthScreen> {
     return false;
   }
 
-  void submit() async {
+  _startLoading() {
+    loading = true;
+    fToast.removeQueuedCustomToasts();
+    Widget toast = LoadingWidget();
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: Duration(seconds: 60),
+    );
+  }
+
+  _stopLoading() {
+    fToast.removeQueuedCustomToasts();
+    loading = false;
+  }
+
+  Future<void> submit() async {
+    if (loading) return;
+
+    _startLoading();
+
     AuthProvider auth = Provider.of<AuthProvider>(context, listen: false);
-    if (formType == FormType.login) {
-      await auth.login(email!, password!);
-    } else if (formType == FormType.register) {
-      await auth.registerUser(email!, password!);
+    try {
+      if (formType == FormType.login) {
+        await auth.login(email!, password!);
+        _stopLoading();
+        _showToast("Login successful");
+      } else if (formType == FormType.register) {
+        await auth.registerUser(email!, password!);
+        _stopLoading();
+        _showToast("Successful registration");
+      }
+    } on FirebaseAuthException catch (e) {
+      _stopLoading();
+      _showToast(e.message.toString(), true);
+    } on Error catch (e) {
+      _stopLoading();
+      _showToast(e.toString(), true);
     }
   }
 
-  void validateAndSubmit() async {
-    if (loading) return;
+  Future<void> validateAndSubmit() async {
     if (validateAndSave()) {
-      loading = true;
-      submit();
+      await submit();
     }
+  }
+
+  _showToast(String message, [bool error = false]) {
+    Widget toast = ToastWidget(message: message, error: error);
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: Duration(seconds: 2),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loading = false;
+    fToast.init(context);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    loading = false;
   }
 
   @override
