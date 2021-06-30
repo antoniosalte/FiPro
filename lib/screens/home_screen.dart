@@ -22,6 +22,8 @@ import 'package:fipro/services/settings_service.dart';
 import 'package:fipro/models.dart/expense.dart';
 import 'package:fipro/models.dart/bill.dart';
 
+import 'dart:js' as js;
+
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
 
@@ -60,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   double valueToReceiveTotal = 0.0;
 
-  //ToDo: XIRR/TIR
+  double xirr = 0.0;
 
   List<Expense> initialExpenses = [];
   List<Expense> finalExpenses = [];
@@ -180,6 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bills = loadedBills;
         valueToReceiveTotal = loadedValueToReceive;
       });
+      calculateXIRR();
       _showToast('Cargado con exito');
     } on Error catch (e) {
       _showToast('Error al cargar, actualice la pagina', true);
@@ -245,6 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
         valueToReceiveTotal += bill.valueToReceive;
         _showToast('Agregado con exito');
       });
+      calculateXIRR();
     } on Error catch (e) {
       _stopLoading();
       _showToast('Error al agregar: $e', true);
@@ -264,6 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bills.remove(bill);
       });
       _showToast("Eliminado con exito");
+      calculateXIRR();
     } on Error catch (e) {
       _stopLoading();
       _showToast('Error al eliminar: $e', true);
@@ -298,6 +303,29 @@ class _HomeScreenState extends State<HomeScreen> {
       _stopLoading();
       _showToast(e.toString(), true);
     }
+  }
+
+  void calculateXIRR() {
+    js.JsArray dates = new js.JsArray();
+    js.JsArray amounts = new js.JsArray();
+
+    for (Bill bill in bills) {
+      DateTime dateTime = bill.dueDate;
+      String date = "${dateTime.year}/${dateTime.month}/${dateTime.day}";
+      amounts.add((-bill.cashFlow).toString());
+      dates.add(date);
+    }
+
+    DateTime a = bills[0].discountDate;
+
+    amounts.add(valueToReceiveTotal);
+    dates.add("${a.year}/${a.month}/${a.day}");
+
+    js.context.callMethod('alertMessage', [dates, amounts]);
+    var state = js.JsObject.fromBrowserObject(js.context['state']);
+    setState(() {
+      xirr = state['xirr'];
+    });
   }
 
   @override
@@ -1089,6 +1117,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: double.infinity,
                       child: Text(
                         "Valor a Recibir Total: ${valueToReceiveTotal.toStringAsFixed(2)}",
+                        textAlign: TextAlign.end,
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 32.0),
+                      width: double.infinity,
+                      child: Text(
+                        "TCEA Cartera: ${(xirr * 100).toStringAsFixed(2)}",
                         textAlign: TextAlign.end,
                       ),
                     ),
